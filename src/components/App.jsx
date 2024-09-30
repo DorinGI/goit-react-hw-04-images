@@ -20,24 +20,24 @@ const App = () => {
   const [largeImageURL, setLargeImageUrl] = useState('');
 
   useEffect(() => {
+    const fetchImages = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${BASE_URL}?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=${per_page}`
+        );
+        setImages(prevImages => [...prevImages, ...response.data.hits]);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     if (query) {
       fetchImages();
+      setPerPage(12);
     }
-  }, [query, page]);
-
-  const fetchImages = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${BASE_URL}?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=${per_page}`
-      );
-      setImages(prevImages => [...prevImages, ...response.data.hits]);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [query, page, per_page]);
 
   const handleSearchSubmit = newQuery => {
     setQuery(newQuery);
